@@ -178,7 +178,25 @@
         .catch(err => {
             console.error("Payout connection completed.");
         });
-    }
+    }// Initialize the Adsgram controller using your Reward Unit ID
+const AdController = window.Adsgram.init({ blockId: "36589" });
+
+// Function to trigger the video when the user clicks the claim button
+function watchAdToEarn() {
+    AdController.show()
+        .then((result) => {
+            // 💰 Success! The user watched the entire video.
+            // Your code to credit the user their crypto goes right here!
+            alert("Video completed! Your crypto reward has been added successfully.");
+        })
+        .catch((error) => {
+            // The user closed the video early or an error occurred
+            console.log("Ad skipped or failed:", error);
+            alert("You must watch the full video advertisement to claim your reward.");
+        });
+}
+
+    
 </script>
 </body>
 </html>
