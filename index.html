@@ -1,134 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Watch & Earn Faucet</title>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <script src="https://richinfo.co/richpartners/in-page/js/richads-ob.js?pubid=1015976&siteid=400432" async></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #17212b);
-            color: var(--tg-theme-text-color, #f5f5f5);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            text-align: center;
-        }
-
-        .card {
-            background-color: var(--tg-theme-secondary-bg-color, #24303f);
-            border-radius: 12px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-        }
-
-        h1 { font-size: 24px; margin-bottom: 10px; color: var(--tg-theme-button-color, #5288c1); }
-
-        .user-info {
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-            word-break: break-all;
-        }
-
-        .btn {
-            background-color: var(--tg-theme-button-color, #5288c1);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s ease;
-        }
-
-        .btn:active { opacity: 0.8; }
-
-        .status { margin-top: 15px; font-size: 14px; color: #8aa1b1; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <img src="banner.png" alt="Telegram Faucet" style="width:100%; border-radius:10px; margin-bottom:15px;">
-    <h1>Watch & Earn</h1>
-    <p>Complete tasks to get paid instantly via FaucetPay!</p>
-
-    <div class="user-info" id="user-profile">Loading Telegram user details...</div>
-
-    <button class="btn" id="watch-ad-btn">🎬 Watch Video Ad</button>
-
-    <div class="status" id="status-msg">Click the button to view an ad</div>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
-
-    <div style="font-size: 11px; color: #b0b0b0; text-align: left; margin-bottom: 5px; padding-left: 5px; font-weight: bold; letter-spacing: 0.5px;">SPONSORED AD</div>
-    <div id="banner-ad-container" style="min-height: 250px; display: flex; justify-content: center; align-items: center; background: #f4f6f9; border-radius: 12px; border: 1px dashed #cbd5e1; padding: 10px;">
-        <span style="color: #94a3b8; font-size: 13px; font-weight: 500;">Loading Banner...</span>
-    </div>
-</div>
-
 <script>
-    // 1. Initialize Telegram Native WebApp Environment
+    // 1. Initialize Telegram
     const tg = window.Telegram.WebApp;
     tg.ready();
 
-    // 2. Initialize Adsgram Controllers immediately on load
-    const AdController = window.Adsgram.init({ blockId: "36589" });
-    const BannerController = window.Adsgram.init({ blockId: "int-36599" });
-    
-    // Render the banner immediately
-    BannerController.render({ container: "banner-ad-container" });
-
-    // 3. Parse and Display Secure User Profile Context
+    // 2. Load User Profile immediately (won't be blocked by ad errors)
     const userProfile = document.getElementById('user-profile');
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const user = tg.initDataUnsafe.user;
         userProfile.innerHTML = `<strong>Telegram User Details:</strong><br>🆔 ID: ${user.id}<br>👤 Name: ${user.first_name} ${user.last_name || ''}<br>🏷️ Username: @${user.username || 'N/A'}`;
     }
 
-    // 4. Multi-Network Video Fallback Engine
+    // 3. Robust Adsgram Initialization with Retry Logic
+    let AdController;
+    let BannerController;
+
+    function initAds() {
+        if (window.Adsgram) {
+            try {
+                AdController = window.Adsgram.init({ blockId: "36589" });
+                BannerController = window.Adsgram.init({ blockId: "int-36599" });
+                BannerController.render({ container: "banner-ad-container" });
+            } catch (e) {
+                console.error("Adsgram init error:", e);
+            }
+        } else {
+            // If not loaded yet, wait 500ms and try again
+            setTimeout(initAds, 500);
+        }
+    }
+    initAds();
+
+    // 4. Video Button Logic
     const adBtn = document.getElementById('watch-ad-btn');
     const statusMsg = document.getElementById('status-msg');
 
     adBtn.addEventListener('click', () => {
-        statusMsg.innerText = "🔄 Calling Ad Network...";
-        statusMsg.style.color = "#007aff";
+        if (!AdController) {
+            statusMsg.innerText = "Ad system still loading, please wait...";
+            return;
+        }
         
+        statusMsg.innerText = "🔄 Playing ad...";
         AdController.show()
             .then((result) => {
                 statusMsg.innerText = "🎉 Success! Sending crypto...";
-                statusMsg.style.color = "#4caf50";
                 triggerPayoutOnBackend();
             })
             .catch((err) => {
-                console.log("Adsgram failed. Routing to Fallback...");
+                console.log("Adsgram error, falling back...");
                 runNetwork2Fallback();
             });
     });
 
     function runNetwork2Fallback() {
-        statusMsg.innerText = "🔄 Routing to Fallback Network...";
-        statusMsg.style.color = "#ff9500";
+        statusMsg.innerText = "🔄 Fallback ad...";
         setTimeout(() => {
-            statusMsg.innerText = "🎉 Fallback ad played! Sending crypto...";
-            statusMsg.style.color = "#4caf50";
+            statusMsg.innerText = "🎉 Fallback success! Sending crypto...";
             triggerPayoutOnBackend();
         }, 2000);
     }
@@ -143,5 +70,3 @@
         }).catch(err => console.error("Payout error."));
     }
 </script>
-</body>
-</html>
