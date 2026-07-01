@@ -2,147 +2,161 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cute Faucet</title>
-
-    <!-- 🌸 Telegram Mini App Wrapper -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Watch & Earn Faucet</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Main styles -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 2. Using Telegram CSS variables to perfectly match light/dark mode natively */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #17212b);
+            color: var(--tg-theme-text-color, #f5f5f5);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
 
-    <!-- Screen styles -->
-    <link rel="stylesheet" href="earn.css">
-    <link rel="stylesheet" href="friends.css">
-    <link rel="stylesheet" href="account.css">
-    <link rel="stylesheet" href="withdrawal.css">
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #24303f);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--tg-theme-button-color, #5288c1);
+        }
+
+        .user-info {
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: left;
+            word-break: break-all;
+        }
+
+        .btn {
+            background-color: var(--tg-theme-button-color, #5288c1);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #8aa1b1;
+        }
+    </style>
 </head>
-
 <body>
 
-    <!-- 🌸 LOADING SCREEN -->
-    <div id="loadingScreen">
-        <div class="loader"></div>
-        <p class="loadingText">Loading magic…</p>
+    <div class="card">
+        <h1>Watch & Earn</h1>
+        <p>Complete tasks to get paid instantly via FaucetPay!</p>
+        
+        <div class="user-info" id="user-profile">
+            Loading Telegram user details...
+        </div>
+
+        <button class="btn" id="watch-ad-btn">🎬 Watch Video Ad</button>
+        <div class="status" id="status-msg">Click the button to view an ad</div>
     </div>
 
-    <!-- ✨ FLOATING SPARKLES -->
-    <div class="sparkle"></div>
-    <div class="sparkle"></div>
-    <div class="sparkle"></div>
-    <div class="sparkle"></div>
+    <script>
+        // 3. Initialize the Telegram WebApp instance
+        const tg = window.Telegram.WebApp;
+        
+        // Notify Telegram that the application is ready and expanded fully
+        tg.ready();
+        tg.expand();
 
-    <!-- HOME TAB -->
-    <section id="home" class="tab active fade-in">
-        <div class="card">
-            <h1 class="title">🍓 Cute Faucet</h1>
-            <p class="subtitle">Earn sweet rewards every day!</p>
-            <p id="homeStatus" class="status-text"></p>
-        </div>
-    </section>
+        // 4. Capture and display the user's specific Telegram Data
+        const profileDiv = document.getElementById('user-profile');
+        const user = tg.initDataUnsafe?.user;
 
-    <!-- EARN TAB -->
-    <section id="earnScreen" class="tab fade-in">
-        <div class="card">
-            <h1 class="title">✨ Earn Points</h1>
+        if (user) {
+            profileDiv.innerHTML = `
+                <strong>Telegram User Details:</strong><br>
+                🆔 ID: <span id="tg-id">${user.id}</span><br>
+                👤 Name: ${user.first_name} ${user.last_name || ''}<br>
+                🏷️ Username: @${user.username || 'N/A'}
+            `;
+        } else {
+            // Fallback visualization if opened outside of Telegram (like a desktop web browser)
+            profileDiv.innerHTML = `
+                ⚠️ <strong>Not in Telegram:</strong><br>
+                Running in standard web browser mode. Mock user applied.<br>
+                🆔 ID: <span id="tg-id">123456789</span>
+            `;
+        }
 
-            <button id="watchAdBtn" class="earn-btn">Watch Ad</button>
+        // 5. Handling the Ad view event click
+        document.getElementById('watch-ad-btn').addEventListener('click', () => {
+            const status = document.getElementById('status-msg');
+            const userId = document.getElementById('tg-id').innerText;
+            
+            status.innerText = "Initializing Ad layer...";
+            
+            /* Once you get your Adsgram Block ID, you will uncomment this execution code block:
+               
+               window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID_HERE" }).show().then((result) => {
+                   status.innerText = "✅ Ad finished! Sending claim request to server...";
+                   triggerPayoutOnBackend(userId);
+               }).catch((result) => {
+                   status.innerText = "❌ Ad skipped or failed to load.";
+               });
+            */
 
-            <div class="progress-container">
-                <div id="progressBar" class="progress-bar"></div>
-            </div>
+            // Temporary mock logic for local testing without an ad provider active:
+            setTimeout(() => {
+                status.innerText = "🎉 Mock Ad Complete! Ready to pay out user ID: " + userId;
+                // triggerPayoutOnBackend(userId);
+            }, 3000);
+        });
 
-            <p id="cooldownText"></p>
-            <p id="dailyLimitText"></p>
-            <p id="earnStatus" class="status-text"></p>
-        </div>
-    </section>
+        // 6. Communicating with your hidden secure backend function
+        function triggerPayoutOnBackend(telegramId) {
+            // Replace with your real Vercel/Netlify backend endpoint address later
+            const backendUrl = 'https://your-backend-api.vercel.app/api/pay';
 
-    <!-- FRIENDS TAB -->
-    <section id="friendsScreen" class="tab fade-in">
-        <div class="card">
-            <h1 class="title">💗 Friends</h1>
-            <p>Invite friends and earn bonus points!</p>
-
-            <p id="refLinkText">https://cute-faucet.app/?ref=your-id</p>
-            <button id="copyRefBtn" class="ref-btn">Copy Referral Link</button>
-            <p id="refStatus" class="status-text"></p>
-
-            <p id="refCount">0 friends invited</p>
-            <p id="refEarnings">0 points earned</p>
-            <button id="collectRefBtn" class="ref-btn">Collect Referral Rewards</button>
-            <p id="friendsStatus" class="status-text"></p>
-
-            <!-- 🌸 SHARE BUTTON -->
-            <button id="shareBtn" class="share-btn">📤 Share</button>
-            <p id="shareStatus" class="status-text"></p>
-        </div>
-    </section>
-
-    <!-- ACCOUNT TAB -->
-    <section id="accountScreen" class="tab fade-in">
-        <div class="card">
-            <h1 class="title">🌸 Your Account</h1>
-            <p id="pointsDisplay">Points: 0</p>
-            <p id="accPoints">0 points</p>
-            <p id="accUserId">User ID: -</p>
-            <button id="logoutBtn" class="ref-btn">Logout</button>
-            <p id="accountStatus" class="status-text"></p>
-        </div>
-    </section>
-
-    <!-- WITHDRAWAL TAB -->
-    <section id="withdrawalScreen" class="tab fade-in">
-        <h2 class="title">💸 Withdraw</h2>
-
-        <div class="withdraw-card">
-            <h3>💗 Your FaucetPay Email</h3>
-            <input id="fpEmailInput" class="withdraw-input" placeholder="example@email.com">
-            <button id="saveFpEmailBtn" class="withdraw-btn">Save Email</button>
-            <p id="fpEmailStatus" class="status-text"></p>
-        </div>
-
-        <div class="withdraw-card">
-            <h3>💰 Points Available</h3>
-            <p id="withdrawPoints">0 points</p>
-        </div>
-
-        <div class="withdraw-card">
-            <h3>💵 Withdraw Amount</h3>
-            <input id="withdrawAmountInput" class="withdraw-input" placeholder="Enter points">
-            <button id="withdrawBtn" class="withdraw-btn">Withdraw</button>
-            <p id="withdrawStatus" class="status-text"></p>
-        </div>
-    </section>
-
-    <!-- 🌸 BOTTOM NAVIGATION BAR -->
-    <nav class="bottom-nav">
-        <button onclick="switchTab('home')" class="nav-btn">
-            <img src="assets/icons/home.png" class="nav-icon">
-            <span>Home</span>
-        </button>
-
-        <button onclick="switchTab('earnScreen')" class="nav-btn">
-            <img src="assets/icons/earn.png" class="nav-icon">
-            <span>Earn</span>
-        </button>
-
-        <button onclick="switchTab('friendsScreen')" class="nav-btn">
-            <img src="assets/icons/friends.png" class="nav-icon">
-            <span>Friends</span>
-        </button>
-
-        <button onclick="switchTab('accountScreen')" class="nav-btn">
-            <img src="assets/icons/account.png" class="nav-icon">
-            <span>Account</span>
-        </button>
-
-        <button onclick="switchTab('withdrawalScreen')" class="nav-btn">
-            <img src="assets/icons/withdraw.png" class="nav-icon">
-            <span>Withdraw</span>
-        </button>
-    </nav>
-
-    <script src="script.js"></script>
+            fetch(backendUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: telegramId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status-msg').innerText = "💰 Paid! check your FaucetPay account.";
+            })
+            .catch(err => {
+                document.getElementById('status-msg').innerText = "⚠️ Network error sending payout.";
+            });
+        }
+    </script>
 </body>
 </html>
