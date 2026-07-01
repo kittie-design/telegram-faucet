@@ -2,192 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Watch & Earn Faucet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cute Faucet</title>
 
-    <!-- Adsgram SDK (load once) -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
-    <!-- Telegram WebApp SDK -->
+    <!-- 🌸 Telegram Mini App Wrapper -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #17212b);
-            color: var(--tg-theme-text-color, #f5f5f5);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            text-align: center;
-        }
+    <!-- Main styles -->
+    <link rel="stylesheet" href="style.css">
 
-        .card {
-            background-color: var(--tg-theme-secondary-bg-color, #24303f);
-            border-radius: 12px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: var(--tg-theme-button-color, #5288c1);
-        }
-
-        .user-info {
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-            word-break: break-all;
-        }
-
-        .btn {
-            background-color: var(--tg-theme-button-color, #5288c1);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s ease;
-        }
-
-        .btn:active {
-            opacity: 0.8;
-        }
-
-        .status {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #8aa1b1;
-        }
-    </style>
+    <!-- Screen styles -->
+    <link rel="stylesheet" href="earn.css">
+    <link rel="stylesheet" href="friends.css">
+    <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="withdrawal.css">
 </head>
+
 <body>
 
-<div class="card">
-    <img src="banner.png" alt="Telegram Faucet" style="width:100%; border-radius:10px; margin-bottom:15px;">
-    <h1>Watch & Earn</h1>
-    <p>Complete tasks to get paid instantly via FaucetPay!</p>
-
-    <div class="user-info" id="user-profile">
-        Loading Telegram user details...
+    <!-- 🌸 LOADING SCREEN -->
+    <div id="loadingScreen">
+        <div class="loader"></div>
+        <p class="loadingText">Loading magic…</p>
     </div>
 
-    <button class="btn" id="watch-ad-btn">🎬 Watch Video Ad</button>
-    <div class="status" id="status-msg">Click the button to view an ad</div>
+    <!-- ✨ FLOATING SPARKLES -->
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+    <!-- HOME TAB -->
+    <section id="home" class="tab active fade-in">
+        <div class="card">
+            <h1 class="title">🍓 Cute Faucet</h1>
+            <p class="subtitle">Earn sweet rewards every day!</p>
+            <p id="homeStatus" class="status-text"></p>
+        </div>
+    </section>
 
-    <div style="font-size: 11px; color: #b0b0b0; text-align: left; margin-bottom: 5px; padding-left: 5px; font-weight: bold; letter-spacing: 0.5px;">
-        SPONSORED AD
-    </div>
+    <!-- EARN TAB -->
+    <section id="earnScreen" class="tab fade-in">
+        <div class="card">
+            <h1 class="title">✨ Earn Points</h1>
 
-    <div id="banner-ad-container"
-         style="min-height: 250px; display: flex; justify-content: center; align-items: center;
-                background: #f4f6f9; border-radius: 12px; border: 1px dashed #cbd5e1; padding: 10px;">
-        <span id="banner-status" style="color: #94a3b8; font-size: 13px; font-weight: 500;">
-            Loading Banner...
-        </span>
-    </div>
-</div>
+            <button id="watchAdBtn" class="earn-btn">Watch Ad</button>
 
-<script>
-    /* ------------------------------
-       1. Telegram WebApp Init
-    ------------------------------ */
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+            <div class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
 
-    const userProfile = document.getElementById('user-profile');
+            <p id="cooldownText"></p>
+            <p id="dailyLimitText"></p>
+            <p id="earnStatus" class="status-text"></p>
+        </div>
+    </section>
 
-    if (tg.initDataUnsafe?.user) {
-        const u = tg.initDataUnsafe.user;
-        userProfile.innerHTML = `
-            <strong>Telegram User Details:</strong><br>
-            🆔 ID: ${u.id}<br>
-            👤 Name: ${u.first_name} ${u.last_name || ''}<br>
-            🏷️ Username: @${u.username || 'N/A'}
-        `;
-    } else {
-        userProfile.innerHTML = `
-            <strong>Telegram User Details:</strong><br>
-            ⚠️ Running in browser mode. Mock user applied.
-        `;
-    }
+    <!-- FRIENDS TAB -->
+    <section id="friendsScreen" class="tab fade-in">
+        <div class="card">
+            <h1 class="title">💗 Friends</h1>
+            <p>Invite friends and earn bonus points!</p>
 
-    /* ------------------------------
-       2. Banner Ad (Loads on Page Load)
-    ------------------------------ */
-    document.addEventListener("DOMContentLoaded", () => {
-        if (window.Adsgram) {
-            const BannerController = window.Adsgram.init({ blockId: "int-36599" });
+            <p id="refLinkText">https://cute-faucet.app/?ref=your-id</p>
+            <button id="copyRefBtn" class="ref-btn">Copy Referral Link</button>
+            <p id="refStatus" class="status-text"></p>
 
-            BannerController.render({
-                container: "banner-ad-container",
-                onRender: () => {
-                    document.getElementById("banner-status").innerText = "";
-                }
-            });
-        }
-    });
+            <p id="refCount">0 friends invited</p>
+            <p id="refEarnings">0 points earned</p>
+            <button id="collectRefBtn" class="ref-btn">Collect Referral Rewards</button>
+            <p id="friendsStatus" class="status-text"></p>
 
-    /* ------------------------------
-       3. Rewarded Video Ad
-    ------------------------------ */
-    const statusMsg = document.getElementById('status-msg');
-    const watchBtn = document.getElementById('watch-ad-btn');
+            <!-- 🌸 SHARE BUTTON -->
+            <button id="shareBtn" class="share-btn">📤 Share</button>
+            <p id="shareStatus" class="status-text"></p>
+        </div>
+    </section>
 
-    const VideoController = window.Adsgram.init({ blockId: "36589" });
+    <!-- ACCOUNT TAB -->
+    <section id="accountScreen" class="tab fade-in">
+        <div class="card">
+            <h1 class="title">🌸 Your Account</h1>
+            <p id="pointsDisplay">Points: 0</p>
+            <p id="accPoints">0 points</p>
+            <p id="accUserId">User ID: -</p>
+            <button id="logoutBtn" class="ref-btn">Logout</button>
+            <p id="accountStatus" class="status-text"></p>
+        </div>
+    </section>
 
-    watchBtn.addEventListener("click", () => {
-        statusMsg.innerText = "🔄 Loading video ad...";
-        statusMsg.style.color = "#007aff";
+    <!-- WITHDRAWAL TAB -->
+    <section id="withdrawalScreen" class="tab fade-in">
+        <h2 class="title">💸 Withdraw</h2>
 
-        VideoController.show()
-            .then(() => {
-                statusMsg.innerText = "🎉 Video completed! Sending crypto reward...";
-                statusMsg.style.color = "#4caf50";
-                triggerPayout();
-            })
-            .catch(err => {
-                console.log("Video failed/skipped:", err);
-                statusMsg.innerText = "⚠️ You must watch the full video to earn.";
-                statusMsg.style.color = "#ff3b30";
-            });
-    });
+        <div class="withdraw-card">
+            <h3>💗 Your FaucetPay Email</h3>
+            <input id="fpEmailInput" class="withdraw-input" placeholder="example@email.com">
+            <button id="saveFpEmailBtn" class="withdraw-btn">Save Email</button>
+            <p id="fpEmailStatus" class="status-text"></p>
+        </div>
 
-    /* ------------------------------
-       4. Backend Payout
-    ------------------------------ */
-    function triggerPayout() {
-        const backendUrl = "https://telegram-faucet.vercel.app/api/payout";
-        const userId = tg.initDataUnsafe?.user?.id || "6182828818";
+        <div class="withdraw-card">
+            <h3>💰 Points Available</h3>
+            <p id="withdrawPoints">0 points</p>
+        </div>
 
-        fetch(backendUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId })
-        })
-        .then(r => r.json())
-        .then(() => console.log("Reward sent."))
-        .catch(() => console.log("Backend connection error."));
-    }
-</script>
+        <div class="withdraw-card">
+            <h3>💵 Withdraw Amount</h3>
+            <input id="withdrawAmountInput" class="withdraw-input" placeholder="Enter points">
+            <button id="withdrawBtn" class="withdraw-btn">Withdraw</button>
+            <p id="withdrawStatus" class="status-text"></p>
+        </div>
+    </section>
 
+    <!-- 🌸 BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav">
+        <button onclick="switchTab('home')" class="nav-btn">
+            <img src="assets/icons/home.png" class="nav-icon">
+            <span>Home</span>
+        </button>
+
+        <button onclick="switchTab('earnScreen')" class="nav-btn">
+            <img src="assets/icons/earn.png" class="nav-icon">
+            <span>Earn</span>
+        </button>
+
+        <button onclick="switchTab('friendsScreen')" class="nav-btn">
+            <img src="assets/icons/friends.png" class="nav-icon">
+            <span>Friends</span>
+        </button>
+
+        <button onclick="switchTab('accountScreen')" class="nav-btn">
+            <img src="assets/icons/account.png" class="nav-icon">
+            <span>Account</span>
+        </button>
+
+        <button onclick="switchTab('withdrawalScreen')" class="nav-btn">
+            <img src="assets/icons/withdraw.png" class="nav-icon">
+            <span>Withdraw</span>
+        </button>
+    </nav>
+
+    <script src="script.js"></script>
 </body>
 </html>
-                    
