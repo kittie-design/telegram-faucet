@@ -2,104 +2,160 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Watch & Earn Faucet</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <title>telegram-faucet</title>
+
     <style>
-        body { margin: 0; background-color: #0c0e12; color: #ffffff; font-family: sans-serif; padding-bottom: 80px; }
-        .page { display: none; padding: 15px; }
-        .page.active { display: block; }
-        .card { background: #1a1d24; border-radius: 16px; padding: 20px; margin-bottom: 15px; }
-        
-        /* Typography */
-        h2 { margin: 0 0 10px 0; font-size: 16px; color: #888; }
-        .balance { font-size: 32px; font-weight: bold; color: #00ff88; margin: 10px 0; }
-        
-        /* Buttons */
-        .btn-withdraw { width: 100%; background: #00ff88; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
-        .action-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #252830; }
-        
-        /* Navigation */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: #0f1115; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
-        .nav-item { color: #888; text-align: center; font-size: 12px; cursor: pointer; }
-        .nav-item.active { color: #00ff88; }
+        /* 2. Using Telegram CSS variables to perfectly match light/dark mode natively */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #17212b);
+            color: var(--tg-theme-text-color, #f5f5f5);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #24303f);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--tg-theme-button-color, #5288c1);
+        }
+
+        .user-info {
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: left;
+            word-break: break-all;
+        }
+
+        .btn {
+            background-color: var(--tg-theme-button-color, #5288c1);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #8aa1b1;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Home Tab -->
-    <div id="home" class="page active">
-        <div class="card">
-            <h2>Points Balance</h2>
-            <div class="balance">0</div>
-            <div style="font-size: 14px;">Level 10 | 97 Energy</div>
-            <div style="background: #333; height: 8px; border-radius: 4px; margin: 10px 0;">
-                <div style="background: #00ff88; width: 60%; height: 100%; border-radius: 4px;"></div>
-            </div>
-            <button class="btn-withdraw">Withdraw</button>
+    <div class="card">
+        <h1>Watch & Earn</h1>
+        <p>Complete tasks to get paid instantly via FaucetPay!</p>
+        
+        <div class="user-info" id="user-profile">
+            Loading Telegram user details...
         </div>
-        <div class="card">
-            <div class="action-item">Watch Ad <span>></span></div>
-            <div class="action-item">Ad Message <span>></span></div>
-            <div class="action-item">Missions <span>></span></div>
-        </div>
-    </div>
 
-    <!-- Account Tab -->
-    <div id="account" class="page">
-        <h2>ACCOUNT</h2>
-        <div class="card">
-            <p><strong>Name:</strong> <span id="username">Loading...</span></p>
-            <p><strong>Telegram ID:</strong> <span id="tg-id">Loading...</span></p>
-        </div>
-    </div>
-
-    <!-- Earn Placeholder -->
-    <div id="earn" class="page"><h2>Earn</h2><p>Coming soon...</p></div>
-
-    <!-- Friends Tab -->
-    <div id="friends" class="page">
-        <h2>FRIENDS</h2>
-        <div class="card">
-            <p><strong>Your Referral Link:</strong><br><span id="ref-link" style="font-size: 12px; color: #00ff88; word-break: break-all;">Loading...</span></p>
-        </div>
-    </div>
-
-    <!-- Navigation -->
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="showTab('home')">🏠 Home</div>
-        <div class="nav-item" onclick="showTab('earn')">💰 Earn</div>
-        <div class="nav-item" onclick="showTab('friends')">👥 Friends</div>
-        <div class="nav-item" onclick="showTab('account')">👤 Account</div>
+        <button class="btn" id="watch-ad-btn">🎬 Watch Video Ad</button>
+        <div class="status" id="status-msg">Click the button to view an ad</div>
     </div>
 
     <script>
-        // 1. Initialize SDK
+        // 3. Initialize the Telegram WebApp instance
         const tg = window.Telegram.WebApp;
+        
+        // Notify Telegram that the application is ready and expanded fully
         tg.ready();
+        tg.expand();
 
-        // 2. Tab Navigation Logic
-        function showTab(tabId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        // 3. User Data Logic
+        // 4. Capture and display the user's specific Telegram Data
+        const profileDiv = document.getElementById('user-profile');
         const user = tg.initDataUnsafe?.user;
 
         if (user) {
-            document.getElementById('tg-id').innerText = user.id;
-            document.getElementById("username").innerText = user.first_name;
-            
-            // Referral link logic stays the same
-            const referralLink = `https://t.me/TG_FaucetBot?start=${user.id}`;
-            document.getElementById("ref-link").innerText = referralLink;
+            profileDiv.innerHTML = `
+                <strong>Telegram User Details:</strong><br>
+                🆔 ID: <span id="tg-id">${user.id}</span><br>
+                👤 Name: ${user.first_name} ${user.last_name || ''}<br>
+                🏷️ Username: @${user.username || 'N/A'}
+            `;
         } else {
-            document.getElementById('tg-id').innerText = "N/A";
-            document.getElementById("username").innerText = "Guest";
-            document.getElementById("ref-link").innerText = "Not available";
+            // Fallback visualization if opened outside of Telegram (like a desktop web browser)
+            profileDiv.innerHTML = `
+                ⚠️ <strong>Not in Telegram:</strong><br>
+                Running in standard web browser mode. Mock user applied.<br>
+                🆔 ID: <span id="tg-id">123456789</span>
+            `;
+        }
+
+        // 5. Handling the Ad view event click
+        document.getElementById('watch-ad-btn').addEventListener('click', () => {
+            const status = document.getElementById('status-msg');
+            const userId = document.getElementById('tg-id').innerText;
+            
+            status.innerText = "Initializing Ad layer...";
+            
+            /* Once you get your Adsgram Block ID, you will uncomment this execution code block:
+               
+               window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID_HERE" }).show().then((result) => {
+                   status.innerText = "✅ Ad finished! Sending claim request to server...";
+                   triggerPayoutOnBackend(userId);
+               }).catch((result) => {
+                   status.innerText = "❌ Ad skipped or failed to load.";
+               });
+            */
+
+            // Temporary mock logic for local testing without an ad provider active:
+            setTimeout(() => {
+                status.innerText = "🎉 Mock Ad Complete! Ready to pay out user ID: " + userId;
+                // triggerPayoutOnBackend(userId);
+            }, 3000);
+        });
+
+        // 6. Communicating with your hidden secure backend function
+        function triggerPayoutOnBackend(telegramId) {
+            // Replace with your real Vercel/Netlify backend endpoint address later
+            const backendUrl = 'https://your-backend-api.vercel.app/api/pay';
+
+            fetch(backendUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: telegramId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status-msg').innerText = "💰 Paid! check your FaucetPay account.";
+            })
+            .catch(err => {
+                document.getElementById('status-msg').innerText = "⚠️ Network error sending payout.";
+            });
         }
     </script>
 </body>
