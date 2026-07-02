@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>BuzzCash</title>
+    <!-- Your styles and other code follow here -->
+</head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BuzzCash</title>
@@ -77,5 +85,29 @@
             event.currentTarget.classList.add('active');
         }
     </script>
+<script>
+  // 1. Initialize the Telegram WebApp SDK
+  const tg = window.Telegram.WebApp;
+  tg.ready(); // Tells Telegram the app is loaded
+
+  // 2. Check if user data exists
+  if (tg.initDataUnsafe.user) {
+    const user = tg.initDataUnsafe.user;
+    
+    // 3. Display the name (assuming you have an HTML element with id="username")
+    document.getElementById("username").innerText = user.first_name;
+    
+    // 4. Create a referral link (this is a simple example)
+    // You'd typically construct this based on your bot's username
+    const referralLink = `https://t.me/YOUR_BOT_USERNAME?start=${user.id}`;
+    document.getElementById("ref-link").innerText = referralLink;
+  } else {
+    document.getElementById("username").innerText = "Guest";
+  }
+</script>
+    <p>Hello, <span id="username">Loading...</span></p>
+<p>Your Referral Link: <span id="ref-link"></span></p>
+
+    
 </body>
 </html>
