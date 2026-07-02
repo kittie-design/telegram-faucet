@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuzzCash</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>telegram-faucet</title>
     <style>
         body { margin: 0; background-color: #0c0e12; color: #ffffff; font-family: sans-serif; padding-bottom: 80px; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .card { background: #1a1d24; border-radius: 16px; padding: 20px; margin-bottom: 15px; }
         
-        /* Popup Styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: #1a1d24; padding: 20px; border-radius: 16px; width: 80%; text-align: center; }
-
+        /* Typography */
         h2 { margin: 0 0 10px 0; font-size: 16px; color: #888; }
-        .btn-withdraw { width: 100%; background: #00ff88; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; }
+        .balance { font-size: 32px; font-weight: bold; color: #00ff88; margin: 10px 0; }
+        
+        /* Buttons */
+        .btn-withdraw { width: 100%; background: #00ff88; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
+        .action-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #252830; }
+        
+        /* Navigation */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: #0f1115; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
+        .nav-item { color: #888; text-align: center; font-size: 12px; cursor: pointer; }
+        .nav-item.active { color: #00ff88; }
     </style>
 </head>
 <body>
@@ -26,66 +32,68 @@
         <div class="card">
             <h2>Points Balance</h2>
             <div class="balance">0</div>
+            <div style="font-size: 14px;">Level 10 | 97 Energy</div>
+            <div style="background: #333; height: 8px; border-radius: 4px; margin: 10px 0;">
+                <div style="background: #00ff88; width: 60%; height: 100%; border-radius: 4px;"></div>
+            </div>
             <button class="btn-withdraw">Withdraw</button>
         </div>
-    </div>
-
-    <!-- Friends Tab -->
-    <div id="friends" class="page">
-        <h2>Friends</h2>
-        <button onclick="openPopup()">Open Invite Popup</button>
+        <div class="card">
+            <div class="action-item">Watch Ad <span>></span></div>
+            <div class="action-item">Ad Message <span>></span></div>
+            <div class="action-item">Missions <span>></span></div>
+        </div>
     </div>
 
     <!-- Account Tab -->
     <div id="account" class="page">
         <h2>ACCOUNT</h2>
         <div class="card">
-            <p>Telegram ID: <span id="tg-id">Loading...</span></p>
-            <p>Hello, <span id="username">Loading...</span></p>
-            <p>Your Referral Link: <span id="ref-link"></span></p>
+            <p><strong>Name:</strong> <span id="username">Loading...</span></p>
+            <p><strong>Telegram ID:</strong> <span id="tg-id">Loading...</span></p>
+            <p><strong>Your Referral Link:</strong><br><span id="ref-link" style="font-size: 12px; color: #00ff88; word-break: break-all;">Loading...</span></p>
         </div>
     </div>
 
-    <!-- The Popup (Hidden by default) -->
-    <div id="invite-popup" class="modal">
-        <div class="modal-content">
-            <h3>Invite Friend</h3>
-            <p>Share this link to earn points!</p>
-            <button onclick="closePopup()">Close</button>
-        </div>
-    </div>
+    <!-- Placeholder Tabs -->
+    <div id="earn" class="page"><h2>Earn</h2><p>Coming soon...</p></div>
+    <div id="friends" class="page"><h2>Friends</h2><p>Coming soon...</p></div>
 
     <!-- Navigation -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="showTab('home')">🏠 Home</div>
+        <div class="nav-item" onclick="showTab('earn')">💰 Earn</div>
         <div class="nav-item" onclick="showTab('friends')">👥 Friends</div>
         <div class="nav-item" onclick="showTab('account')">👤 Account</div>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // 1. Initialize SDK
         const tg = window.Telegram.WebApp;
         tg.ready();
 
-        // Populate User Info
-        if (tg.initDataUnsafe?.user) {
-            document.getElementById('tg-id').innerText = tg.initDataUnsafe.user.id;
-            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
-            document.getElementById('ref-link').innerText = `https://t.me/YOUR_BOT?start=${tg.initDataUnsafe.user.id}`;
-        }
-
-        // Navigation
+        // 2. Tab Navigation Logic
         function showTab(tabId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        // Popup Logic
-        function openPopup() {
-            document.getElementById('invite-popup').classList.add('active');
-        }
-        function closePopup() {
-            document.getElementById('invite-popup').classList.remove('active');
+        // 3. User Data Logic
+        const user = tg.initDataUnsafe?.user;
+
+        if (user) {
+            document.getElementById('tg-id').innerText = user.id;
+            document.getElementById("username").innerText = user.first_name;
+            
+            // Updated to your bot username
+            const referralLink = `https://t.me/TG_FaucetBot?start=${user.id}`;
+            document.getElementById("ref-link").innerText = referralLink;
+        } else {
+            document.getElementById('tg-id').innerText = "N/A";
+            document.getElementById("username").innerText = "Guest";
+            document.getElementById("ref-link").innerText = "Not available";
         }
     </script>
 </body>
