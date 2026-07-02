@@ -1,6 +1,8 @@
-name": "telegram-faucet",
+ 
+  {
+  "name": "telegram-faucet",
   "version": "1.0.0",
-  "description": "A Web3 Watch-to-Earn Telegram Mini App faucet. Monetized with Adsgram rewarded video ads and custom channel-join tasks, rewarding users instantly via the FaucetPay API. Built using HTML, client-side JS, and a secure serverless backend. Easily deployable on Vercel.",
+  "description": "A Web3 Watch-to-Earn Telegram Mini App faucet.",
   "main": "index.js",
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
@@ -16,10 +18,5 @@ name": "telegram-faucet",
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/kittie-design/telegram-faucet/issues"
-  },
-  "homepage": "https://github.com/kittie-design/telegram-faucet#readme"
+  "license": "ISC"
 }
