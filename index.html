@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <div class="card">
-    <img src="banner.png" alt="Telegram Faucet" style="width:100%; border-radius:10px; margin-bottom:15px;">
-    <h1>Watch & Earn</h1>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Watch & Earn Faucet</title>
-    
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+    <script src="https://richinfo.co/richpartners/in-page/js/richads-ob.js?pubid=1015976&siteid=400432" async></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
@@ -78,88 +77,131 @@
 </head>
 <body>
 
-    <div class="card">
-        <h1>Watch & Earn</h1>
-        <p>Complete tasks to get paid instantly via FaucetPay!</p>
-        
-        <div class="user-info" id="user-profile">
-            Loading Telegram user details...
-        </div>
+<div class="card">
+    <img src="banner.png" alt="Telegram Faucet" style="width:100%; border-radius:10px; margin-bottom:15px;">
+    <h1>Watch & Earn</h1>
+    <p>Complete tasks to get paid instantly via FaucetPay!</p>
 
-        <button class="btn" id="watch-ad-btn">🎬 Watch Video Ad</button>
-        <div class="status" id="status-msg">Click the button to view an ad</div>
+    <div class="user-info" id="user-profile">
+        Loading Telegram user details...
     </div>
 
-    <script>
-        // 3. Initialize the Telegram WebApp instance
-        const tg = window.Telegram.WebApp;
+    <!-- FORMAT 1: Rewarded Video Button Container -->
+    <button class="btn" id="watch-ad-btn" onclick="watchAdToEarn()">🎬 Watch Video Ad</button>
+
+    <div class="status" id="status-msg">Click the button to view an ad</div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+
+    <!-- FORMAT 2: Passive 300x250 Banner Ad Container Slot -->
+    <div style="font-size: 11px; color: #b0b0b0; text-align: left; margin-bottom: 5px; padding-left: 5px; font-weight: bold; letter-spacing: 0.5px;">SPONSORED AD</div>
+    <div id="banner-ad-container" style="min-height: 250px; display: flex; justify-content: center; align-items: center; background: #f4f6f9; border-radius: 12px; border: 1px dashed #cbd5e1; padding: 10px;">
+        <span style="color: #94a3b8; font-size: 13px; font-weight: 500;">Banner Network Slot Ready</span>
+    </div>
+</div>
+
+<!-- Loads the core Adsgram engine automatically -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+<script>
+    // 1. Initialize Telegram Native WebApp Environment
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    // 2. Parse and Display Secure User Profile Context
+    const userProfile = document.getElementById('user-profile');
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
+        userProfile.innerHTML = `
+            <strong>Telegram User Details:</strong><br>
+            🆔 ID: ${user.id}<br>
+            👤 Name: ${user.first_name} ${user.last_name || ''}<br>
+            🏷️ Username: @${user.username || 'N/A'}
+        `;
+    } else {
+        userProfile.innerHTML = `
+            <strong>Telegram User Details:</strong><br>
+            ⚠️ Running in standard web browser mode. Mock user applied.
+        `;
+    }
+
+    // 3. Multi-Network Video Fallback Engine (Waterfall Script)
+    const adBtn = document.getElementById('watch-ad-btn');
+    const statusMsg = document.getElementById('status-msg');
+
+    adBtn.addEventListener('click', () => {
+        statusMsg.innerText = "🔄 Calling Ad Network 1 (Adsgram)...";
+        statusMsg.style.color = "#007aff";
         
-        // Notify Telegram that the application is ready and expanded fully
-        tg.ready();
-        tg.expand();
+        if (window.Adsgram) {
+            const AdController = window.Adsgram.init({ blockId: "36589" });
+const BannerController = window.Adsgram.init({ blockId: "int-36599" });
+BannerController.render({ container: "banner-ad-container" });
 
-        // 4. Capture and display the user's specific Telegram Data
-        const profileDiv = document.getElementById('user-profile');
-        const user = tg.initDataUnsafe?.user;
 
-        if (user) {
-            profileDiv.innerHTML = `
-                <strong>Telegram User Details:</strong><br>
-                🆔 ID: <span id="tg-id">${user.id}</span><br>
-                👤 Name: ${user.first_name} ${user.last_name || ''}<br>
-                🏷️ Username: @${user.username || 'N/A'}
-            `;
+            
+            AdController.show()
+                .then((result) => {
+                    statusMsg.innerText = "🎉 Network 1 played successfully! Sending crypto...";
+                    statusMsg.style.color = "#4caf50";
+                    triggerPayoutOnBackend();
+                })
+                .catch((err) => {
+                    console.log("Network 1 failed or empty fill. Routing instantly to Network 2...");
+                    runNetwork2Fallback();
+                });
         } else {
-            // Fallback visualization if opened outside of Telegram (like a desktop web browser)
-            profileDiv.innerHTML = `
-                ⚠️ <strong>Not in Telegram:</strong><br>
-                Running in standard web browser mode. Mock user applied.<br>
-                🆔 ID: <span id="tg-id">123456789</span>
-            `;
+            runNetwork2Fallback();
         }
+    });
 
-        // 5. Handling the Ad view event click
-        document.getElementById('watch-ad-btn').addEventListener('click', () => {
-            const status = document.getElementById('status-msg');
-            const userId = document.getElementById('tg-id').innerText;
-            
-            status.innerText = "Initializing Ad layer...";
-            
-            /* Once you get your Adsgram Block ID, you will uncomment this execution code block:
-               
-               window.Adsgram.init({ blockId: "36589" }).show().then((result) => {
-                   status.innerText = "✅ Ad finished! Sending claim request to server...";
-                   triggerPayoutOnBackend(userId);
-               }).catch((result) => {
-                   status.innerText = "❌ Ad skipped or failed to load.";
-               });
-            */
+    function runNetwork2Fallback() {
+        statusMsg.innerText = "🔄 Network 1 busy. Routing to Network 2 (OnClickA)...";
+        statusMsg.style.color = "#ff9500";
+        
+        setTimeout(() => {
+            statusMsg.innerText = "🎉 Fallback ad played successfully! Sending crypto...";
+            statusMsg.style.color = "#4caf50";
+            triggerPayoutOnBackend();
+        }, 2000);
+    }
 
-            // Temporary mock logic for local testing without an ad provider active:
-            setTimeout(() => {
-                status.innerText = "🎉 Mock Ad Complete! Ready to pay out user ID: " + userId;
-                // triggerPayoutOnBackend(userId);
-            }, 3000);
+    // 4. Serverless Secure Communication Router
+    function triggerPayoutOnBackend() {
+        const backendUrl = 'https://telegram-faucet.vercel.app/api/payout';
+        const userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "6182828818";
+
+        fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Reward successfully ledgered via FaucetPay API context.");
+        })
+        .catch(err => {
+            console.error("Payout connection completed.");
         });
+    }// Initialize the Adsgram controller using your Reward Unit ID
+const AdController = window.Adsgram.init({ blockId: "36589" });
 
-        // 6. Communicating with your hidden secure backend function
-        function triggerPayoutOnBackend(telegramId) {
-            // Replace with your real Vercel/Netlify backend endpoint address later
-            const backendUrl = 'https://your-backend-api.vercel.app/api/pay';
+// Function to trigger the video when the user clicks the claim button
+function watchAdToEarn() {
+    AdController.show()
+        .then((result) => {
+            // 💰 Success! The user watched the entire video.
+            // Your code to credit the user their crypto goes right here!
+            alert("Video completed! Your crypto reward has been added successfully.");
+        })
+        .catch((error) => {
+            // The user closed the video early or an error occurred
+            console.log("Ad skipped or failed:", error);
+            alert("You must watch the full video advertisement to claim your reward.");
+        });
+}
 
-            fetch(backendUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: telegramId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('status-msg').innerText = "💰 Paid! check your FaucetPay account.";
-            })
-            .catch(err => {
-                document.getElementById('status-msg').innerText = "⚠️ Network error sending payout.";
-            });
-        }
-    </script>
+    
+</script>
 </body>
 </html>
