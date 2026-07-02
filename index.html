@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuzzCash</title>
     <style>
-        body { background-color: #0c0e12; color: white; font-family: sans-serif; margin: 0; }
-        /* Tab Content Styling */
-        .page { display: none; padding: 20px; }
+        body { margin: 0; background-color: #0c0e12; color: #ffffff; font-family: sans-serif; padding-bottom: 80px; }
+        .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        
-        /* Dark Rounded Cards (Matches UI in 1000035866_2.jpg) */
         .card { background: #1a1d24; border-radius: 16px; padding: 20px; margin-bottom: 15px; }
         
-        /* Bottom Navigation Bar (Matches UI in 1000035869_3.jpg) */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 65px; background: #0f1115; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
-        .nav-item { color: #888; font-size: 12px; cursor: pointer; }
+        /* Typography */
+        h2 { margin: 0 0 10px 0; font-size: 16px; color: #888; }
+        .balance { font-size: 32px; font-weight: bold; color: #00ff88; margin: 10px 0; }
+        
+        /* Buttons */
+        .btn-withdraw { width: 100%; background: #00ff88; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
+        .action-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #252830; }
+        
+        /* Navigation */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: #0f1115; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
+        .nav-item { color: #888; text-align: center; font-size: 12px; cursor: pointer; }
         .nav-item.active { color: #00ff88; }
     </style>
 </head>
@@ -20,34 +28,53 @@
 
     <!-- Home Tab -->
     <div id="home" class="page active">
-        <div class="card">Points Balance: 0</div>
-        <div class="card">Watch Ad</div>
+        <div class="card">
+            <h2>Points Balance</h2>
+            <div class="balance">0</div>
+            <div style="font-size: 14px;">Level 10 | 97 Energy</div>
+            <div style="background: #333; height: 8px; border-radius: 4px; margin: 10px 0;">
+                <div style="background: #00ff88; width: 60%; height: 100%; border-radius: 4px;"></div>
+            </div>
+            <button class="btn-withdraw">Withdraw</button>
+        </div>
+        <div class="card">
+            <div class="action-item">Watch Ad <span>></span></div>
+            <div class="action-item">Ad Message <span>></span></div>
+            <div class="action-item">Missions <span>></span></div>
+        </div>
     </div>
 
-    <!-- My Account Tab -->
+    <!-- Account Tab -->
     <div id="account" class="page">
-        <h3>Account</h3>
-        <div class="card">Telegram ID: <span id="tg-id">Loading...</span></div>
+        <h2>ACCOUNT</h2>
+        <div class="card">
+            <p>Telegram ID: <span id="tg-id">Loading...</span></p>
+        </div>
     </div>
+
+    <!-- Placeholder Tabs -->
+    <div id="earn" class="page"><h2>Earn</h2><p>Coming soon...</p></div>
+    <div id="friends" class="page"><h2>Friends</h2><p>Coming soon...</p></div>
 
     <!-- Navigation -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="showTab('home')">🏠 Home</div>
         <div class="nav-item" onclick="showTab('earn')">💰 Earn</div>
         <div class="nav-item" onclick="showTab('friends')">👥 Friends</div>
-        <div class="nav-item" onclick="showTab('account')">👤 My Account</div>
+        <div class="nav-item" onclick="showTab('account')">👤 Account</div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Initialize User Data
         const tg = window.Telegram.WebApp;
         tg.ready();
         document.getElementById('tg-id').innerText = tg.initDataUnsafe?.user?.id || "N/A";
 
         function showTab(tabId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
     </script>
 </body>
