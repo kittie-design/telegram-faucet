@@ -1,106 +1,54 @@
-<div class="card">
-    <img src="banner.png" alt="Telegram Faucet" style="width:100%; border-radius:10px; margin-bottom:15px;">
-    <h1>Watch & Earn</h1>
-    <p>Complete tasks to get paid instantly via FaucetPay!</p>
-
-    <div class="user-info" id="user-profile">
-        Loading Telegram user details...
-    </div>
-
-    <!-- FORMAT 1: Rewarded Video Button Container -->
-    <button class="btn" id="watch-ad-btn">🎬 Watch Video Ad</button>
-    <div class="status" id="status-msg">Click the button to view an ad</div>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
-
-    <!-- FORMAT 2: Passive 300x250 Banner Ad Container Slot -->
-    <div style="font-size: 11px; color: #b0b0b0; text-align: left; margin-bottom: 5px; padding-left: 5px; font-weight: bold; letter-spacing: 0.5px;">SPONSORED AD</div>
-    <div id="banner-ad-container" style="min-height: 250px; display: flex; justify-content: center; align-items: center; background: #f4f6f9; border-radius: 12px; border: 1px dashed #cbd5e1; padding: 10px;">
-        <span style="color: #94a3b8; font-size: 13px; font-weight: 500;">Banner Network Slot Ready</span>
-    </div>
-</div>
-
-<!-- Loads the core Adsgram engine automatically -->
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
-<script>
-    // 1. Initialize Telegram Native WebApp Environment
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-
-    // 2. Parse and Display Secure User Profile Context
-    const userProfile = document.getElementById('user-profile');
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        const user = tg.initDataUnsafe.user;
-        userProfile.innerHTML = `
-            <strong>Telegram User Details:</strong><br>
-            🆔 ID: ${user.id}<br>
-            👤 Name: ${user.first_name} ${user.last_name || ''}<br>
-            🏷️ Username: @${user.username || 'N/A'}
-        `;
-    } else {
-        userProfile.innerHTML = `
-            <strong>Telegram User Details:</strong><br>
-            ⚠️ Running in standard web browser mode. Mock user applied.
-        `;
-    }
-
-    // 3. Multi-Network Video Fallback Engine (Waterfall Script)
-    const adBtn = document.getElementById('watch-ad-btn');
-    const statusMsg = document.getElementById('status-msg');
-
-    adBtn.addEventListener('click', () => {
-        statusMsg.innerText = "🔄 Calling Ad Network 1 (Adsgram)...";
-        statusMsg.style.color = "#007aff";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body { background-color: #0c0e12; color: white; font-family: sans-serif; margin: 0; }
+        /* Tab Content Styling */
+        .page { display: none; padding: 20px; }
+        .page.active { display: block; }
         
-        if (window.Adsgram) {
-            const AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" });
-            
-            AdController.show()
-                .then((result) => {
-                    statusMsg.innerText = "🎉 Network 1 played successfully! Sending crypto...";
-                    statusMsg.style.color = "#4caf50";
-                    triggerPayoutOnBackend();
-                })
-                .catch((err) => {
-                    console.log("Network 1 failed or empty fill. Routing instantly to Network 2...");
-                    runNetwork2Fallback();
-                });
-        } else {
-            runNetwork2Fallback();
+        /* Dark Rounded Cards (Matches UI in 1000035866_2.jpg) */
+        .card { background: #1a1d24; border-radius: 16px; padding: 20px; margin-bottom: 15px; }
+        
+        /* Bottom Navigation Bar (Matches UI in 1000035869_3.jpg) */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 65px; background: #0f1115; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; }
+        .nav-item { color: #888; font-size: 12px; cursor: pointer; }
+        .nav-item.active { color: #00ff88; }
+    </style>
+</head>
+<body>
+
+    <!-- Home Tab -->
+    <div id="home" class="page active">
+        <div class="card">Points Balance: 0</div>
+        <div class="card">Watch Ad</div>
+    </div>
+
+    <!-- My Account Tab -->
+    <div id="account" class="page">
+        <h3>Account</h3>
+        <div class="card">Telegram ID: <span id="tg-id">Loading...</span></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showTab('home')">🏠 Home</div>
+        <div class="nav-item" onclick="showTab('earn')">💰 Earn</div>
+        <div class="nav-item" onclick="showTab('friends')">👥 Friends</div>
+        <div class="nav-item" onclick="showTab('account')">👤 My Account</div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Initialize User Data
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        document.getElementById('tg-id').innerText = tg.initDataUnsafe?.user?.id || "N/A";
+
+        function showTab(tabId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
         }
-    });
-
-    function runNetwork2Fallback() {
-        statusMsg.innerText = "🔄 Network 1 busy. Routing to Network 2 (OnClickA)...";
-        statusMsg.style.color = "#ff9500";
-        
-        setTimeout(() => {
-            statusMsg.innerText = "🎉 Fallback ad played successfully! Sending crypto...";
-            statusMsg.style.color = "#4caf50";
-            triggerPayoutOnBackend();
-        }, 2000);
-    }
-
-    // 4. Serverless Secure Communication Router
-    function triggerPayoutOnBackend() {
-        const backendUrl = 'https://telegram-faucet.vercel.app/api/payout';
-        const userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "6182828818";
-
-        fetch(backendUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: userId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Reward successfully ledgered via FaucetPay API context.");
-        })
-        .catch(err => {
-            console.error("Payout connection completed.");
-        });
-    }
-</script>
+    </script>
 </body>
 </html>
-                    
