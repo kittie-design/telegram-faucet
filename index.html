@@ -51,13 +51,19 @@
         <div class="card">
             <p><strong>Name:</strong> <span id="username">Loading...</span></p>
             <p><strong>Telegram ID:</strong> <span id="tg-id">Loading...</span></p>
-            <p><strong>Your Referral Link:</strong><br><span id="ref-link" style="font-size: 12px; color: #00ff88; word-break: break-all;">Loading...</span></p>
         </div>
     </div>
 
-    <!-- Placeholder Tabs -->
+    <!-- Earn Placeholder -->
     <div id="earn" class="page"><h2>Earn</h2><p>Coming soon...</p></div>
-    <div id="friends" class="page"><h2>Friends</h2><p>Coming soon...</p></div>
+
+    <!-- Friends Tab -->
+    <div id="friends" class="page">
+        <h2>FRIENDS</h2>
+        <div class="card">
+            <p><strong>Your Referral Link:</strong><br><span id="ref-link" style="font-size: 12px; color: #00ff88; word-break: break-all;">Loading...</span></p>
+        </div>
+    </div>
 
     <!-- Navigation -->
     <div class="nav-bar">
@@ -87,7 +93,7 @@
             document.getElementById('tg-id').innerText = user.id;
             document.getElementById("username").innerText = user.first_name;
             
-            // Updated to your bot username
+            // Referral link logic stays the same
             const referralLink = `https://t.me/TG_FaucetBot?start=${user.id}`;
             document.getElementById("ref-link").innerText = referralLink;
         } else {
