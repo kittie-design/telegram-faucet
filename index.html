@@ -4,10 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Watch & Earn Faucet</title>
-
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -21,7 +19,6 @@
         min-height: 100vh;
         text-align: center;
     }
-
     .card {
         background-color: var(--tg-theme-secondary-bg-color, #24303f);
         border-radius: 12px;
@@ -31,13 +28,11 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         margin-bottom: 20px;
     }
-
     h1 {
         font-size: 24px;
         margin-bottom: 10px;
         color: var(--tg-theme-button-color, #5288c1);
     }
-
     .section {
         background: rgba(255,255,255,0.05);
         padding: 12px;
@@ -46,7 +41,6 @@
         text-align: left;
         font-size: 14px;
     }
-
     .btn {
         background-color: var(--tg-theme-button-color, #5288c1);
         color: var(--tg-theme-button-text-color, #ffffff);
@@ -59,9 +53,7 @@
         width: 100%;
         margin-top: 15px;
     }
-
     .btn:active { opacity: 0.8; }
-
     .status {
         margin-top: 10px;
         font-size: 14px;
@@ -70,28 +62,20 @@
 </style>
 </head>
 <body>
-
 <div class="card">
-
     <img src="banner.png" style="width:100%; border-radius:10px; margin-bottom:15px;">
-
     <h1>Watch & Earn</h1>
     <p>Earn crypto instantly via FaucetPay</p>
-
     <div class="section" id="user-info">Loading user...</div>
-
     <div class="section">
         <strong>Points Balance:</strong> <span id="points">0</span><br>
         <strong>Daily Ads:</strong> <span id="daily">0</span>/25<br>
         <strong>Next Ad In:</strong> <span id="cooldown">Ready</span><br>
         <strong>Daily Reset:</strong> <span id="daily-reset">--</span>
     </div>
-
     <button class="btn" onclick="watchAdToEarn()">🎬 Watch Video Ad</button>
     <div class="status" id="status-msg">Click the button to view an ad</div>
-
     <button class="btn" onclick="withdraw()">💸 Withdraw (1000 pts = 1 USDC)</button>
-
 </div>
 
 <script>
@@ -111,25 +95,34 @@ let cooldownEnd = 0;
 let dailyResetEnd = 0;
 
 // ---------------------------
+// SUPABASE CONFIG
+// ---------------------------
+const SUPABASE_URL = "https://kqibtnapvzlrevfkfgdx.supabase.co";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_ANON_KEY_HERE"; // safe to expose in frontend code
+
+const supabaseHeaders = {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_ANON_KEY,
+    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+};
+
+// ---------------------------
 // LOAD USER DATA FROM SUPABASE
 // ---------------------------
 async function loadUser() {
-    const res = await fetch("https://YOUR_PROJECT.supabase.co/functions/v1/user", {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/user`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: supabaseHeaders,
         body: JSON.stringify({ userId })
     });
-
     const data = await res.json();
-
     document.getElementById("points").innerText = data.points;
     document.getElementById("daily").innerText = data.daily_ads;
-
     cooldownEnd = data.cooldown_end;
     dailyResetEnd = data.daily_reset_end;
 }
-
 loadUser();
+
 setInterval(updateTimers, 1000);
 
 // ---------------------------
@@ -170,24 +163,26 @@ function watchAdToEarn() {
     AdController.show()
         .then(async () => {
             document.getElementById("status-msg").innerText = "Rewarding +3 points...";
-
-            const res = await fetch("https://YOUR_PROJECT.supabase.co/functions/v1/earn", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId })
-            });
-
-            const data = await res.json();
-
-            document.getElementById("points").innerText = data.points;
-            document.getElementById("daily").innerText = data.daily_ads;
-
-            cooldownEnd = data.cooldown_end;
-            dailyResetEnd = data.daily_reset_end;
-
-            alert("Video completed! +3 points added.");
+            try {
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/earn`, {
+                    method: "POST",
+                    headers: supabaseHeaders,
+                    body: JSON.stringify({ userId })
+                });
+                if (!res.ok) throw new Error(`Server returned ${res.status}`);
+                const data = await res.json();
+                document.getElementById("points").innerText = data.points;
+                document.getElementById("daily").innerText = data.daily_ads;
+                cooldownEnd = data.cooldown_end;
+                dailyResetEnd = data.daily_reset_end;
+                alert("Video completed! +3 points added.");
+            } catch (err) {
+                console.error(err);
+                alert("Reward failed to save — server error. Try again.");
+            }
         })
-        .catch(() => {
+        .catch((err) => {
+            console.error(err);
             alert("You must watch the full video.");
         });
 }
@@ -196,24 +191,19 @@ function watchAdToEarn() {
 // WITHDRAW
 // ---------------------------
 async function withdraw() {
-    const res = await fetch("https://YOUR_PROJECT.supabase.co/functions/v1/withdraw", {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/withdraw`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: supabaseHeaders,
         body: JSON.stringify({ userId })
     });
-
     const data = await res.json();
-
     if (data.error) {
         alert(data.error);
         return;
     }
-
     document.getElementById("points").innerText = data.points;
     alert("Withdrawal successful!");
 }
 </script>
-
 </body>
 </html>
-
