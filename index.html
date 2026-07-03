@@ -1,209 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src='//libtl.com/sdk.js' data-zone='11216766' data-sdk='show_11216766'></script>
-<script src="https://richinfo.co/richpartners/in-page/js/richads-ob.js?pubid=1015976&siteid=400432" async></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Watch & Earn Faucet</title>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Watch & Earn Faucet</title>
 
-    <script src="https://richinfo.co/richpartners/in-page/js/richads-ob.js?pubid=1015976&siteid=400432" async></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <style>
-        /* 2. Using Telegram CSS variables to perfectly match light/dark mode natively */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #17212b);
-            color: var(--tg-theme-text-color, #f5f5f5);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            text-align: center;
-        }
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--tg-theme-bg-color, #17212b);
+        color: var(--tg-theme-text-color, #f5f5f5);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+    }
 
-        .card {
-            background-color: var(--tg-theme-secondary-bg-color, #24303f);
-            border-radius: 12px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-        }
+    .card {
+        background-color: var(--tg-theme-secondary-bg-color, #24303f);
+        border-radius: 12px;
+        padding: 20px;
+        width: 90%;
+        max-width: 420px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        margin-bottom: 20px;
+    }
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: var(--tg-theme-button-color, #5288c1);
-        }
+    h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: var(--tg-theme-button-color, #5288c1);
+    }
 
-        .user-info {
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-            word-break: break-all;
-        }
+    .section {
+        background: rgba(255,255,255,0.05);
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 15px;
+        text-align: left;
+        font-size: 14px;
+    }
 
-        .btn {
-            background-color: var(--tg-theme-button-color, #5288c1);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s ease;
-        }
+    .btn {
+        background-color: var(--tg-theme-button-color, #5288c1);
+        color: var(--tg-theme-button-text-color, #ffffff);
+        border: none;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 15px;
+    }
 
-        .btn:active {
-            opacity: 0.8;
-        }
+    .btn:active { opacity: 0.8; }
 
-        .status {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #8aa1b1;
-        }
-    </style>
+    .status {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #8aa1b1;
+    }
+</style>
 </head>
 <body>
 
 <div class="card">
-    <img src="banner.png" alt="Telegram Faucet" style="width:100%; border-radius:10px; margin-bottom:15px;">
-    <h1>Watch & Earn</h1>
-    <p>Complete tasks to get paid instantly via FaucetPay!</p>
 
-    <div class="user-info" id="user-profile">
-        Loading Telegram user details...
+    <img src="banner.png" style="width:100%; border-radius:10px; margin-bottom:15px;">
+
+    <h1>Watch & Earn</h1>
+    <p>Earn crypto instantly via FaucetPay</p>
+
+    <div class="section" id="user-info">Loading user...</div>
+
+    <div class="section">
+        <strong>Points Balance:</strong> <span id="points">0</span><br>
+        <strong>Daily Ads:</strong> <span id="daily">0</span>/25<br>
+        <strong>Next Ad In:</strong> <span id="cooldown">Ready</span><br>
+        <strong>Daily Reset:</strong> <span id="daily-reset">--</span>
     </div>
 
-    <!-- FORMAT 1: Rewarded Video Button Container -->
-    <button class="btn" id="watch-ad-btn" onclick="watchAdToEarn()">🎬 Watch Video Ad</button>
-
+    <button class="btn" onclick="watchAdToEarn()">🎬 Watch Video Ad</button>
     <div class="status" id="status-msg">Click the button to view an ad</div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+    <button class="btn" onclick="withdraw()">💸 Withdraw (1000 pts = 1 USDC)</button>
 
-    <!-- FORMAT 2: Passive 300x250 Banner Ad Container Slot -->
-    <div style="font-size: 11px; color: #b0b0b0; text-align: left; margin-bottom: 5px; padding-left: 5px; font-weight: bold; letter-spacing: 0.5px;">SPONSORED AD</div>
-    <div id="banner-ad-container" style="min-height: 250px; display: flex; justify-content: center; align-items: center; background: #f4f6f9; border-radius: 12px; border: 1px dashed #cbd5e1; padding: 10px;">
-        <span style="color: #94a3b8; font-size: 13px; font-weight: 500;">Banner Network Slot Ready</span>
-    </div>
 </div>
 
-<!-- Loads the core Adsgram engine automatically -->
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
 <script>
-    // 1. Initialize Telegram Native WebApp Environment
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+const tg = window.Telegram.WebApp;
+tg.ready();
 
-    // 2. Parse and Display Secure User Profile Context
-    const userProfile = document.getElementById('user-profile');
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        const user = tg.initDataUnsafe.user;
-        userProfile.innerHTML = `
-            <strong>Telegram User Details:</strong><br>
-            🆔 ID: ${user.id}<br>
-            👤 Name: ${user.first_name} ${user.last_name || ''}<br>
-            🏷️ Username: @${user.username || 'N/A'}
-        `;
-    } else {
-        userProfile.innerHTML = `
-            <strong>Telegram User Details:</strong><br>
-            ⚠️ Running in standard web browser mode. Mock user applied.
-        `;
-    }
+const user = tg.initDataUnsafe?.user;
+const userId = user?.id;
 
-    // 3. Multi-Network Video Fallback Engine (Waterfall Script)
-    const adBtn = document.getElementById('watch-ad-btn');
-    const statusMsg = document.getElementById('status-msg');
+document.getElementById("user-info").innerHTML = `
+    <strong>Telegram User:</strong><br>
+    ID: ${userId}<br>
+    Username: @${user?.username}
+`;
 
-    adBtn.addEventListener('click', () => {
-        statusMsg.innerText = "🔄 Calling Ad Network 1 (Adsgram)...";
-        statusMsg.style.color = "#007aff";
-        
-        if (window.Adsgram) {
-            const AdController = window.Adsgram.init({ blockId: "36589" });
-const BannerController = window.Adsgram.init({ blockId: "int-36599" });
-BannerController.render({ container: "banner-ad-container" });
+let cooldownEnd = 0;
+let dailyResetEnd = 0;
 
-
-            
-            AdController.show()
-                .then((result) => {
-                    statusMsg.innerText = "🎉 Network 1 played successfully! Sending crypto...";
-                    statusMsg.style.color = "#4caf50";
-                    triggerPayoutOnBackend();
-                })
-                .catch((err) => {
-                    console.log("Network 1 failed or empty fill. Routing instantly to Network 2...");
-                    runNetwork2Fallback();
-                });
-        } else {
-            runNetwork2Fallback();
-        }
+// ---------------------------
+// LOAD USER DATA FROM SUPABASE
+// ---------------------------
+async function loadUser() {
+    const res = await fetch("https://YOUR_PROJECT.supabase.co/functions/v1/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
     });
 
-    function runNetwork2Fallback() {
-        statusMsg.innerText = "🔄 Network 1 busy. Routing to Network 2 (OnClickA)...";
-        statusMsg.style.color = "#ff9500";
-        
-        setTimeout(() => {
-            statusMsg.innerText = "🎉 Fallback ad played successfully! Sending crypto...";
-            statusMsg.style.color = "#4caf50";
-            triggerPayoutOnBackend();
-        }, 2000);
+    const data = await res.json();
+
+    document.getElementById("points").innerText = data.points;
+    document.getElementById("daily").innerText = data.daily_ads;
+
+    cooldownEnd = data.cooldown_end;
+    dailyResetEnd = data.daily_reset_end;
+}
+
+loadUser();
+setInterval(updateTimers, 1000);
+
+// ---------------------------
+// UPDATE TIMERS
+// ---------------------------
+function updateTimers() {
+    const now = Date.now();
+
+    // 60s cooldown
+    if (cooldownEnd > now) {
+        const sec = Math.floor((cooldownEnd - now) / 1000);
+        document.getElementById("cooldown").innerText = sec + "s";
+    } else {
+        document.getElementById("cooldown").innerText = "Ready";
     }
 
-    // 4. Serverless Secure Communication Router
-    function triggerPayoutOnBackend() {
-        const backendUrl = 'https://telegram-faucet.vercel.app/api/payout';
-        const userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "6182828818";
+    // 24h daily reset
+    if (dailyResetEnd > now) {
+        const hrs = Math.floor((dailyResetEnd - now) / 3600000);
+        const min = Math.floor(((dailyResetEnd - now) % 3600000) / 60000);
+        document.getElementById("daily-reset").innerText = `${hrs}h ${min}m`;
+    } else {
+        document.getElementById("daily-reset").innerText = "Ready";
+    }
+}
 
-        fetch(backendUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: userId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Reward successfully ledgered via FaucetPay API context.");
-        })
-        .catch(err => {
-            console.error("Payout connection completed.");
-        });
-    }// Initialize the Adsgram controller using your Reward Unit ID
+// ---------------------------
+// WATCH AD → CALL SUPABASE
+// ---------------------------
 const AdController = window.Adsgram.init({ blockId: "36589" });
 
-// Function to trigger the video when the user clicks the claim button
 function watchAdToEarn() {
+    if (Date.now() < cooldownEnd) {
+        alert("Please wait for cooldown to finish.");
+        return;
+    }
+
     AdController.show()
-        .then((result) => {
-            // 💰 Success! The user watched the entire video.
-            // Your code to credit the user their crypto goes right here!
-            alert("Video completed! Your crypto reward has been added successfully.");
+        .then(async () => {
+            document.getElementById("status-msg").innerText = "Rewarding +3 points...";
+
+            const res = await fetch("https://YOUR_PROJECT.supabase.co/functions/v1/earn", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId })
+            });
+
+            const data = await res.json();
+
+            document.getElementById("points").innerText = data.points;
+            document.getElementById("daily").innerText = data.daily_ads;
+
+            cooldownEnd = data.cooldown_end;
+            dailyResetEnd = data.daily_reset_end;
+
+            alert("Video completed! +3 points added.");
         })
-        .catch((error) => {
-            // The user closed the video early or an error occurred
-            console.log("Ad skipped or failed:", error);
-            alert("You must watch the full video advertisement to claim your reward.");
+        .catch(() => {
+            alert("You must watch the full video.");
         });
 }
 
-    
+// ---------------------------
+// WITHDRAW
+// ---------------------------
+async function withdraw() {
+    const res = await fetch("https://YOUR_PROJECT.supabase.co/functions/v1/withdraw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+
+    document.getElementById("points").innerText = data.points;
+    alert("Withdrawal successful!");
+}
 </script>
+
 </body>
 </html>
+
