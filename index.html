@@ -298,7 +298,7 @@ function initAdsgram() {
   try {
     AdVideo        = window.Adsgram.init({ blockId: BLOCK_VIDEO });
     AdInterstitial = window.Adsgram.init({ blockId: BLOCK_INTERSTITIAL });
-    AdTasks        = window.Adsgram.init({ blockId: BLOCK_TASKS });
+    AdTasks        = window.Adsgram.init({ blockId: BLOCK_TASKS, debug: true });
   } catch (e) {
     console.warn("Adsgram init error:", e);
   }
