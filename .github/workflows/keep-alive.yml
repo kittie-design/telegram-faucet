@@ -1,0 +1,81 @@
+# .github/workflows/keep-alive.yml
+# Pings all Supabase Edge Functions every 3 days to prevent free-tier spin-down.
+# Also runs manually from GitHub Actions tab if needed.
+
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 9 */3 * *'  # Every 3 days at 9:00 AM UTC
+  workflow_dispatch:        # Also allows manual trigger from GitHub Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping /user function
+        run: |
+          curl -s -o /dev/null -w "user: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/user \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{"userId": "healthcheck"}'
+
+      - name: Ping /earn function
+        run: |
+          curl -s -o /dev/null -w "earn: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/earn \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{"userId": "healthcheck", "adToken": "healthcheck-ping"}'
+
+      - name: Ping /withdraw function
+        run: |
+          curl -s -o /dev/null -w "withdraw: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/withdraw \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{"userId": "healthcheck"}'
+
+      - name: Ping /leaderboard function
+        run: |
+          curl -s -o /dev/null -w "leaderboard: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/leaderboard \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{}'
+
+      - name: Ping /history function
+        run: |
+          curl -s -o /dev/null -w "history: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/history \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{"userId": "healthcheck"}'
+
+      - name: Ping /save-email function
+        run: |
+          curl -s -o /dev/null -w "save-email: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/save-email \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{"userId": "healthcheck", "email": "healthcheck@ping.local"}'
+
+      - name: Ping /earn-task function
+        run: |
+          curl -s -o /dev/null -w "earn-task: %{http_code}\n" \
+            -X POST https://kqibtnapvzlrevfkfgdx.supabase.co/functions/v1/earn-task \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d '{"userId": "healthcheck", "adToken": "healthcheck-task-ping"}'
+
+      - name: Done
+        run: echo "✅ All functions pinged successfully"
