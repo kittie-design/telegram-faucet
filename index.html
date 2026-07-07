@@ -324,8 +324,7 @@ function applyUserData(data) {
 // ================================================================
 window.addEventListener("load", () => {
   initAdsgram();
-  loadUser().then(() => {
-    // Repeat every 5 minutes  });
+  loadUser();
 });
 
 setInterval(updateTimers, 1000);
