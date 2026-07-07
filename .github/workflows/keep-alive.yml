@@ -21,7 +21,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d '{"userId": "healthcheck"}'
+            -d '{"userId": 1}'
 
       - name: Ping /earn function
         run: |
@@ -30,7 +30,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d '{"userId": "healthcheck", "adToken": "healthcheck-ping"}'
+            -d '{"userId": 1, "adToken": "healthcheck-ping"}'
 
       - name: Ping /withdraw function
         run: |
@@ -39,7 +39,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d '{"userId": "healthcheck"}'
+            -d '{"userId": 1}'
 
       - name: Ping /leaderboard function
         run: |
@@ -57,7 +57,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d '{"userId": "healthcheck"}'
+            -d '{"userId": 1}'
 
       - name: Ping /save-email function
         run: |
@@ -66,7 +66,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d '{"userId": "healthcheck", "email": "healthcheck@ping.local"}'
+            -d '{"userId": 1, "email": "healthcheck@ping.local"}'
 
       - name: Ping /earn-task function
         run: |
@@ -75,7 +75,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d '{"userId": "healthcheck", "adToken": "healthcheck-task-ping"}'
+            -d '{"userId": 1, "adToken": "healthcheck-task-ping"}'
 
       - name: Done
         run: echo "✅ All functions pinged successfully"
