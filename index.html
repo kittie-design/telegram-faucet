@@ -104,13 +104,6 @@
   }
   .task-info h3 { margin: 0 0 6px; font-size: 15px; color: #a78bfa; }
 
-  /* Interstitial badge */
-  .int-badge {
-    background: rgba(82,136,193,0.15); border: 1px solid rgba(82,136,193,0.3);
-    border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #8aa1b1;
-    margin-bottom: 10px; text-align:center;
-  }
-
   /* Banner */
   .banner { width:100%; border-radius:10px; margin-bottom:14px; }
 
@@ -144,8 +137,6 @@
     <h1>Watch & Earn</h1>
     <p>Earn crypto instantly via FaucetPay</p>
 
-    <div class="int-badge" id="int-status">📺 Interstitial ad loads automatically</div>
-
     <div class="section" id="user-info">Loading user...</div>
 
     <div class="section">
@@ -158,9 +149,9 @@
     <div class="alert hidden" id="earn-alert"></div>
 
     <button class="btn" id="watch-btn" onclick="watchAdToEarn()">🎬 Watch Video Ad</button>
-    <div class="status" id="status-msg">+3 points per ad • 60s cooldown • 25 ads/day</div>
+    <div class="status" id="status-msg">+3 pts per ad • 25 ads/day • 1000 pts = $0.10 USDC</div>
 
-    <button class="btn" style="margin-top:16px;" onclick="withdraw()">💸 Withdraw (1000 pts = 1 USDC)</button>
+    <button class="btn" style="margin-top:16px;" onclick="withdraw()">💸 Withdraw (1000 pts = $0.10 USDC)</button>
   </div>
 </div>
 
@@ -250,7 +241,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // Adsgram Block IDs
 const BLOCK_VIDEO        = "36589";       // Rewarded video (existing)
-const BLOCK_INTERSTITIAL = "int-36599";   // Interstitial
 const BLOCK_TASKS        = "task-36617";  // Offer wall / tasks
 
 const H = {
@@ -292,31 +282,16 @@ let taskCount     = 0;
 // ================================================================
 // ADSGRAM CONTROLLERS
 // ================================================================
-let AdVideo, AdInterstitial, AdTasks;
+let AdVideo, AdTasks;
 
 function initAdsgram() {
   try {
     AdVideo        = window.Adsgram.init({ blockId: BLOCK_VIDEO });
-    AdInterstitial = window.Adsgram.init({ blockId: BLOCK_INTERSTITIAL });
     // AdTasks disabled until Adsgram activates task- format
     // AdTasks = window.Adsgram.init({ blockId: BLOCK_TASKS, debug: true });
   } catch (e) {
     console.warn("Adsgram init error:", e);
   }
-}
-
-// ================================================================
-// INTERSTITIAL — auto-show on load + every 5 minutes
-// ================================================================
-function showInterstitial() {
-  if (!AdInterstitial) return;
-  AdInterstitial.show()
-    .then(() => {
-      document.getElementById("int-status").innerText = "📺 Interstitial ad shown";
-    })
-    .catch(() => {
-      document.getElementById("int-status").innerText = "📺 No interstitial ad available";
-    });
 }
 
 // ================================================================
@@ -350,11 +325,7 @@ function applyUserData(data) {
 window.addEventListener("load", () => {
   initAdsgram();
   loadUser().then(() => {
-    // Show interstitial 2 seconds after load (gives UI time to render)
-    setTimeout(showInterstitial, 10000); // 10s delay — gives user time to see the app first
-    // Repeat every 5 minutes
-    setInterval(showInterstitial, 5 * 60 * 1000);
-  });
+    // Repeat every 5 minutes  });
 });
 
 setInterval(updateTimers, 1000);
@@ -416,7 +387,7 @@ function watchAdToEarn() {
         } else {
           applyUserData(data);
           showAlert("earn-alert", "✅ +3 points added!", "success");
-          document.getElementById("status-msg").innerText = "+3 points per ad • 60s cooldown • 25 ads/day";
+          document.getElementById("status-msg").innerText = "+3 pts per ad • 25 ads/day • 1000 pts = $0.10 USDC";
         }
       } catch (e) {
         console.error(e);
@@ -425,7 +396,7 @@ function watchAdToEarn() {
     })
     .catch((err) => {
       console.error(err);
-      document.getElementById("status-msg").innerText = "+3 points per ad • 60s cooldown • 25 ads/day";
+      document.getElementById("status-msg").innerText = "+3 pts per ad • 25 ads/day • 1000 pts = $0.10 USDC";
       showAlert("earn-alert", "You must watch the full video to earn.", "error");
       document.getElementById("watch-btn").disabled = false;
     });
